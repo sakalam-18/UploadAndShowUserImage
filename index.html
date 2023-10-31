@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Image Upload</title>
+</head>
+<body>
+    <h2>Upload Customer Image</h2>
+    <input type="file" id="imageInput">
+    <button onclick="uploadImage()">Upload</button>
+
+    <h2>Customer Image</h2>
+    <div id="customerImage"></div>
+    <button onclick="showImage()">showImage</button>
+
+    <script>
+        function uploadImage() {
+            var customerId = 1; 
+            var input = document.getElementById('imageInput');
+            var imageFile = input.files[0];
+            var formData = new FormData();
+            formData.append('image', imageFile);
+
+            fetch(`http://localhost:8080/api/v1/customers/${customerId}/profile-image`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.body("We did it ot not ");
+            })
+            .then(data => {
+                console.log('Image uploaded successfully', data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the upload', error);
+            });
+        }
+
+        function showImage(){// Fetch customer image
+            var customerId = 1; // Replace with the actual customer ID
+            fetch(`http://localhost:8080/api/v1/customers/${customerId}/profile-image`)
+                .then(response => response.blob())
+                .then(blob => {
+                    var imageUrl = URL.createObjectURL(blob);
+                    var imgElement = document.createElement('img');
+                    imgElement.src = imageUrl;
+                    document.getElementById('customerImage').appendChild(imgElement);
+                })
+                .catch(error => {
+                    console.error('There was a problem fetching the image', error);
+                });
+        }
+    </script>
+</body>
+</html>
